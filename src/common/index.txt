@@ -1,0 +1,7 @@
+├── common/               # Módulo compartilhado com utilidades
+│   ├── decorators/       # Decoradores customizados
+│   ├── filters/          # Filtros globais para tratamento de erros
+│   ├── interceptors/     # Interceptadores
+│   ├── middlewares/      # Middlewares globais
+│   ├── pipes/            # Pipes customizados
+│   └── utils/            # Funções utilitárias

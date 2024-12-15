@@ -1,0 +1,4 @@
+config/               # Configurações do projeto
+│   ├── app.config.ts     # Configuração geral da aplicação
+│   ├── database.config.ts # Configuração do banco de dados
+│   └── s3.config.ts      # Configuração do S3

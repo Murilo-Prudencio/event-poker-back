@@ -1,0 +1,7 @@
+modules/              # Módulos organizados por domínio
+│   ├── user/             # Módulo de usuários
+│   │   ├── dto/          # Data Transfer Objects
+│   │   ├── entities/     # Definição de entidades
+│   │   ├── user.controller.ts
+│   │   ├── user.service.ts
+│   │   └── user.module.ts

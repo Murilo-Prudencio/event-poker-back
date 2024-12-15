@@ -1,0 +1,78 @@
+services:
+  event-poker-api:
+    container_name: event-poker-api
+    image: event-poker-api
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development # Only will build development stage from our dockerfile
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - ${PORT}:${PORT}
+    networks:
+      - event-poker-intranet
+    env_file:
+      - .env # Isso carrega o arquivo .env com as variáveis
+    environment:
+      - DB_HOST=${DB_HOST} # Usando a variável de ambiente do .env
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    depends_on:
+      event_poker:
+        condition: service_healthy
+      event-poker-redis:
+        condition: service_healthy
+    command: npm run start:dev # Run in development mode
+
+  event_poker:
+    container_name: event_poker
+    image: postgres:17.2
+    restart: unless-stopped
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:${DB_PORT} # Altere o valor de ${DB_PORT} no .env para corresponder à porta do PostgreSQL
+    networks:
+      - event-poker-intranet
+    environment:
+      POSTGRES_USER: ${DB_USER} # Defina as variáveis de ambiente no arquivo .env ou diretamente aqui
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      TZ: "utc"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+      interval: 5s
+      retries: 3
+      timeout: 3s
+
+  event-poker-redis:
+    container_name: event-poker-redis
+    image: redis:alpine
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+    ports:
+      - 6380:${REDIS_PORT}
+    networks:
+      - event-poker-intranet
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 3
+      timeout: 3s
+
+volumes:
+  postgres:
+    name: event_poker
+  redis:
+    name: event-poker-redis
+
+networks:
+  event-poker-intranet:
+    name: event-poker-intranet
+    driver: bridge
